@@ -1,5 +1,5 @@
 import './style.css'
-import Renderer from './renderer';
+import Renderer from "./geometree/examples/subdivision";
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
