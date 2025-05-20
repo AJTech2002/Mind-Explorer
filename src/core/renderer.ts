@@ -1,5 +1,6 @@
 import { color, screenUV } from 'three/tsl';
 import * as THREE from 'three/webgpu';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 export default class Renderer {
 
@@ -7,6 +8,7 @@ export default class Renderer {
   protected camera!: THREE.OrthographicCamera;
   protected scene!: THREE.Scene;
   protected renderer!: THREE.WebGPURenderer;
+  protected controls!: OrbitControls;
 
 
   constructor(canvas: HTMLCanvasElement) {
@@ -22,11 +24,11 @@ export default class Renderer {
     this.scene.background = new THREE.Color(0x000000);
 
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2.0);
     this.scene.add(ambientLight);
 
     const aspect = window.innerWidth / window.innerHeight;
-    this.size = 1;
+    this.size = 3;
 
     this.camera = new THREE.OrthographicCamera(
       -this.size * aspect,
@@ -45,10 +47,20 @@ export default class Renderer {
       canvas: this.canvas,
       alpha: true,
       antialias: true,
+      stencil: true,
       powerPreference: 'high-performance',
     });
 
+
     this.updateCamera();
+
+
+    const controls = new OrbitControls(this.camera, this.renderer.domElement);
+    //controls.enableDamping = true;
+    controls.dampingFactor = .05;
+
+    this.controls = controls;
+    this.controls.enablePan = false;
 
     this.onStart();
 
@@ -109,6 +121,7 @@ export default class Renderer {
     this.lastTime = this.time;
 
     this.renderer.renderAsync(this.scene, this.camera);
+    this.controls.update();
 
   }
 
